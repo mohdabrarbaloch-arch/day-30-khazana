@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>Khazana — your knowledge, with receipts</title>
+<link rel="stylesheet" href="/static/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+</head>
+<body>
+
+<!-- ── Auth ─────────────────────────────────────────────────────────── -->
+<section id="auth-view" class="auth-shell">
+  <div class="auth-card">
+    <div class="brand">
+      <span class="brand-mark">خ</span>
+      <div>
+        <h1>Khazana</h1>
+        <p class="brand-sub">Your documents. Your answers. With receipts.</p>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab is-active" data-tab="login" role="tab">Sign in</button>
+      <button class="tab" data-tab="register" role="tab">Create account</button>
+    </div>
+
+    <form id="login-form" class="auth-form">
+      <label>Email<input type="email" name="email" autocomplete="username" required placeholder="you@company.com"></label>
+      <label>Password<input type="password" name="password" autocomplete="current-password" required placeholder="••••••••"></label>
+      <button type="submit" class="btn btn-primary">Sign in</button>
+      <p class="hint">Demo account: <code>abraz@example.com</code> / <code>khazana-demo-2026</code></p>
+    </form>
+
+    <form id="register-form" class="auth-form is-hidden">
+      <label>Name<input type="text" name="display_name" autocomplete="name" required placeholder="Ayesha Khan"></label>
+      <label>Email<input type="email" name="email" autocomplete="username" required placeholder="you@company.com"></label>
+      <label>Password<input type="password" name="password" autocomplete="new-password" required minlength="8" placeholder="At least 8 characters"></label>
+      <button type="submit" class="btn btn-primary">Create account</button>
+    </form>
+
+    <p id="auth-error" class="error is-hidden" role="alert"></p>
+  </div>
+</section>
+
+<!-- ── App ──────────────────────────────────────────────────────────── -->
+<div id="app-view" class="app-shell is-hidden">
+
+  <header class="topbar">
+    <div class="brand brand-sm">
+      <span class="brand-mark">خ</span>
+      <h1>Khazana</h1>
+    </div>
+    <div class="topbar-right">
+      <span id="user-name" class="user-chip"></span>
+      <button id="logout-btn" class="btn btn-ghost btn-sm">Sign out</button>
+    </div>
+  </header>
+
+  <main class="layout">
+
+    <!-- Sidebar: collections -->
+    <aside class="sidebar">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Collections</h2>
+          <button id="new-collection-btn" class="btn btn-icon" title="New collection" aria-label="New collection">+</button>
+        </div>
+        <ul id="collection-list" class="collection-list"></ul>
+        <p id="collections-empty" class="empty-note">No collections yet. Create one to start.</p>
+      </div>
+
+      <div class="panel">
+        <h2>Usage</h2>
+        <dl id="stats-grid" class="stats-grid"></dl>
+      </div>
+    </aside>
+
+    <!-- Main column -->
+    <section class="content">
+
+      <!-- Ask -->
+      <div class="panel ask-panel">
+        <div class="panel-head">
+          <h2>Ask your knowledge base</h2>
+          <span id="scope-label" class="scope-chip">All collections</span>
+        </div>
+        <form id="ask-form" class="ask-form">
+          <textarea id="question" rows="2" placeholder="What is our refund policy for enterprise customers?" required maxlength="1000"></textarea>
+          <button type="submit" class="btn btn-primary" id="ask-btn">Ask</button>
+        </form>
+        <div class="suggestions" id="suggestions"></div>
+      </div>
+
+      <!-- Answer -->
+      <div id="answer-panel" class="panel answer-panel is-hidden">
+        <div class="answer-head">
+          <span id="confidence-badge" class="badge"></span>
+          <span id="answer-meta" class="answer-meta"></span>
+        </div>
+        <div id="answer-body" class="answer-body"></div>
+        <div id="answer-refusal" class="refusal is-hidden"></div>
+        <div id="citations" class="citations"></div>
+        <details id="explain-details" class="explain">
+          <summary>How was this answered?</summary>
+          <div id="explain-body" class="explain-body"></div>
+        </details>
+      </div>
+
+      <!-- Documents -->
+      <div class="panel">
+        <div class="panel-head">
+          <h2 id="docs-title">Documents</h2>
+          <button id="upload-btn" class="btn btn-ghost btn-sm">Add document</button>
+        </div>
+        <div id="upload-form-wrap" class="upload-wrap is-hidden">
+          <form id="upload-form" class="upload-form">
+            <div class="upload-tabs">
+              <button type="button" class="tab is-active" data-upload="file">Upload file</button>
+              <button type="button" class="tab" data-upload="text">Paste text</button>
+            </div>
+            <div id="upload-file-fields">
+              <label>File (.txt, .md, .csv, .pdf)<input type="file" name="file" accept=".txt,.md,.markdown,.csv,.pdf"></label>
+            </div>
+            <div id="upload-text-fields" class="is-hidden">
+              <label>Title<input type="text" name="title" placeholder="Refund Policy 2026"></label>
+              <label>Text<textarea name="text" rows="6" placeholder="Paste the document text here…"></textarea></label>
+            </div>
+            <div class="upload-actions">
+              <button type="submit" class="btn btn-primary btn-sm">Ingest</button>
+              <button type="button" id="upload-cancel" class="btn btn-ghost btn-sm">Cancel</button>
+            </div>
+            <p id="upload-status" class="hint"></p>
+          </form>
+        </div>
+        <ul id="document-list" class="document-list"></ul>
+        <p id="documents-empty" class="empty-note">No documents in this collection yet.</p>
+      </div>
+
+    </section>
+  </main>
+</div>
+
+<div id="toast" class="toast is-hidden" role="status"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

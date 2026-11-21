@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: khazana
+      POSTGRES_PASSWORD: khazana
+      POSTGRES_DB: khazana
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U khazana -d khazana"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # No default. The app refuses to start without a real secret, which is
+      # the point — a default secret in a public repo is how sessions get
+      # forged. Set SECRET_KEY in .env before running.
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY must be set in .env — see .env.example}
+      DATABASE_URL: postgresql+psycopg://khazana:khazana@db:5432/khazana
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      ACCESS_TOKEN_MINUTES: ${ACCESS_TOKEN_MINUTES:-720}
+      MAX_UPLOAD_BYTES: ${MAX_UPLOAD_BYTES:-2000000}
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-60}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:
